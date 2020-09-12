@@ -46,7 +46,7 @@ router.post('/questions', (req, res) => {
   const date = Date.parse(question.date);
 
   const emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-  if (!emailRegex.test(email.toLowerCase())) {
+  if (email && !emailRegex.test(email.toLowerCase())) {
     return res.status(400).json({ message: "Please insert a valid email." });
   }
 

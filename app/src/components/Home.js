@@ -56,7 +56,7 @@ class Home extends Component {
           { this.state.successMessage &&
             <SuccessNotice message={this.state.successMessage} clearMessage={() => this.clearMessage()} /> }
           { this.state.errorMessage &&
-            <ErrorNotice message={this.state.errorMessage} clearMessage={() => this.clearError()} /> }
+            <ErrorNotice message={this.state.errorMessage} clearMessage={() => this.clearMessage()} /> }
             <Form>
               <Row>
                 <Col>
