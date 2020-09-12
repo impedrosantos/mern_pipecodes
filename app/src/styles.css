@@ -1,0 +1,33 @@
+h1 {
+  padding: 30px 0;
+}
+
+.react-datepicker-wrapper {
+  display: block;
+}
+
+.error-notice {
+  margin: 1rem 0;
+  padding: 0.5em;
+  border: 1px solid #8B0000;
+  background-color: #F08080;
+  color: #8B0000;
+  position: relative;
+}
+
+.success-notice {
+  margin: 1rem 0;
+  padding: 0.5em;
+  border: 1px solid #3A6629;
+  background-color: #C5E3BF;
+  color: #3A6629;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  right: 0;
+  margin-right: 15px;
+  border: unset;
+  background: unset;
+}
