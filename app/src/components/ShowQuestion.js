@@ -1,31 +1,17 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
 import { Table, Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { showQuestion } from '../actions/questionsActions';
+import PropTypes from 'prop-types';
 
 class ShowQuestion extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: '',
-      email: '',
-      date: '',
-    }
-  }
-
   componentDidMount() {
-    axios.get('http://localhost:3001/api/questions/id/' + this.props.match.params.id)
-      .then(response => {
-        this.setState({
-          name: response.data.question.name,
-          email: response.data.question.email,
-          date: response.data.question.date,
-        })
-      })
+    this.props.showQuestion(this.props.match.params.id);
   };
 
   render() {
-    const questionData = this.state;
+    const { question } = this.props;
     return (
       <>
         <Container>
@@ -41,10 +27,10 @@ class ShowQuestion extends Component {
             </thead>
             <tbody>
               <tr>
-                <td>{questionData.name}</td>
-                <td>{questionData.email}</td>
-                <td>{questionData.obs}</td>
-                <td>{questionData.date.substring(0,10)}</td>
+                <td>{question.name}</td>
+                <td>{question.email}</td>
+                <td>{question.obs}</td>
+                <td>{question.date && question.date.substring(0,10)}</td>
               </tr>
             </tbody>
           </Table>
@@ -55,4 +41,18 @@ class ShowQuestion extends Component {
   }
 }
 
-export default ShowQuestion;
+ShowQuestion.propTypes = {
+  showQuestion: PropTypes.func.isRequired,
+  question: PropTypes.shape({
+    name: PropTypes.string,
+    email: PropTypes.string,
+    date: PropTypes.string,
+    obs: PropTypes.string
+  }).isRequired,
+}
+
+const mapStateToProps = state => ({
+  question: state.questions.getQuestion,
+})
+
+export default connect(mapStateToProps, { showQuestion })(ShowQuestion);

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Table, Container } from 'react-bootstrap';
 import Pagination from './Pagination';
+import { getQuestions } from '../actions/questionsActions';
+import PropTypes from 'prop-types';
 
 const Question = props => (
   <tr>
@@ -17,44 +19,20 @@ const Question = props => (
 )
 
 class Questions extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      question: [],
-      nextPage: undefined,
-      previousPage: undefined,
-      idToDelete: null,
-    };
-  }
-
   componentDidMount() {
     const params = new URLSearchParams(this.props.location.search);
     params.get('page')
-    axios.get('http://localhost:3001/api/questions', { params })
-      .then(response => {
-        this.setState({
-          question: response.data.results,
-          nextPage: response.data.next.page,
-          previousPage: response.data.previous.page,
-        })
-        if (!this.state.nextPage && !this.state.previousPage) {
-          this.setState({ nextPage: 2 })
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      })
+    this.props.getQuestions(params);
   }
 
-  questionsList() {
-    return this.state.question.map(currentQuestion => {
-      return <Question question={currentQuestion} />;
+  questionsList = () => {
+    return this.props.question.map(currentQuestion => {
+      return <Question key={currentQuestion._id} question={currentQuestion} />;
     })
   }
 
   render() {
-    const nextPage = this.state.nextPage;
-    const previousPage = this.state.previousPage;
+    const { question, nextPage, previousPage } = this.props;
     return (
       <>
         <Container>
@@ -70,7 +48,7 @@ class Questions extends Component {
               </tr>
             </thead>
             <tbody>
-              { this.questionsList() }
+              { question && this.questionsList() }
             </tbody>
           </Table>
           <Pagination nextPage={nextPage} previousPage={previousPage} />
@@ -80,4 +58,15 @@ class Questions extends Component {
   }
 }
 
-export default Questions;
+Questions.propTypes = {
+  getQuestions: PropTypes.func.isRequired,
+  questions: PropTypes.object
+}
+
+const mapStateToProps = state => ({
+  question: state.questions.question,
+  nextPage: state.questions.nextPage,
+  previousPage: state.questions.previousPage,
+})
+
+export default connect(mapStateToProps, { getQuestions })(Questions);

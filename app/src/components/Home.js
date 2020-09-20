@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
+import { addQuestion, clearMessages } from '../actions/questionsActions';
+import PropTypes from 'prop-types';
 import * as moment from 'moment'
 import DatePicker from "react-datepicker";
 import { Button, Form, FormControl, Container, Row, Col } from 'react-bootstrap';
@@ -9,36 +11,13 @@ import SuccessNotice from '../misc/SuccessNotice';
 
 class Home extends Component {
   state = {
-    data: [],
     question: {
       name: null,
       email: null,
       obs: null,
       date: new Date()
-    },
-    errorMessage: undefined,
-    successMessage: undefined,
+    }
   };
-
-  storeQuestion = (question) => {
-    axios.post('http://localhost:3001/api/questions', { question })
-    .then(response => {
-      this.setState({
-        successMessage: response.data,
-        errorMessage: undefined
-      });
-    })
-    .catch((error) => {
-      this.setState({
-        errorMessage: error.response.data.message,
-        successMessage: undefined
-      });
-    })
-  };
-
-  clearMessage(){
-    this.setState({errorMessage: undefined, successMessage: undefined})
-  }
 
   handleDateChange = date => {
     this.setState({ question: {...this.state.question, date: date}});
@@ -53,10 +32,10 @@ class Home extends Component {
       <>
         <Container>
           <h1>Add new Question</h1>
-          { this.state.successMessage &&
-            <SuccessNotice message={this.state.successMessage} clearMessage={() => this.clearMessage()} /> }
-          { this.state.errorMessage &&
-            <ErrorNotice message={this.state.errorMessage} clearMessage={() => this.clearMessage()} /> }
+          { this.props.successMessage &&
+            <SuccessNotice message={this.props.successMessage} clearMessage={() => this.props.clearMessages()} /> }
+          { this.props.errorMessage &&
+            <ErrorNotice message={this.props.errorMessage} clearMessage={() => this.props.clearMessages()} /> }
             <Form>
               <Row>
                 <Col>
@@ -105,7 +84,7 @@ class Home extends Component {
                   </Form.Group>
                 </Col>
               </Row>
-              <Button onClick={() => this.storeQuestion(this.state.question)}>
+              <Button onClick={() => this.props.addQuestion(this.state.question)}>
                 Submit
               </Button>
             </Form>
@@ -115,4 +94,16 @@ class Home extends Component {
   }
 }
 
-export default Home;
+Home.propTypes = {
+  addQuestion: PropTypes.func.isRequired,
+  clearMessages: PropTypes.func.isRequired,
+  successMessage: PropTypes.string,
+  errorMessage: PropTypes.string
+}
+
+const mapStateToProps = state => ({
+  successMessage: state.questions.successMessage,
+  errorMessage: state.questions.errorMessage
+})
+
+export default connect(mapStateToProps, { addQuestion, clearMessages })(Home);
